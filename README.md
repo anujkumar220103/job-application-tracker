@@ -15,7 +15,7 @@ A full-stack platform to track job applications with a powerful **Chrome Extensi
 - Axios / Fetch API integration  
 
 
-###  Backend (Node.js + Express + Prisma + MySQL)
+###  Backend(Prisma + MySQL)
 - Authentication with JWT  
 - Job CRUD operations  
 - Prisma ORM schema + migration  
@@ -38,7 +38,7 @@ A full-stack platform to track job applications with a powerful **Chrome Extensi
 | Layer | Technology |
 |------|------------|
 | **Frontend** | Next.js 14, React, TypeScript, TailwindCSS |
-| **Backend** | Node.js, Express.js, TypeScript |
+| **Backend** | Next.js, TypeScript |
 | **Database** | MySQL + Prisma ORM |
 | **Auth** | JWT Authentication |
 | **Extension** | Chrome Manifest V3 |
@@ -46,39 +46,26 @@ A full-stack platform to track job applications with a powerful **Chrome Extensi
 
 ---
 
-### Frontend Environment Variables
+### Environment Variables
 
-The frontend uses environment variables to configure the application. Create a `.env` file inside the `frontend/` directory with the following variables:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:4000/api
-```
-To run it locally use these command
-```
-cd frontend
-npm install
-npm run dev
-```
-
-
-### Backend Environment Variables
-
-The backend uses environment variables to configure the application. Create a `.env` file inside the `backend/` directory with the following variables:
+The app uses environment variables to configure the application. Create a `.env` file inside the `frontend/` directory with the following variables:
 
 ```env
 DATABASE_URL="mysql://<userID>:<password>@localhost:3306/jobtracker"
 JWT_SECRET="your secret"
-PORT=4000
 CLIENT_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
 ```
 To run it locally use these command
 ```
-cd backend
+cd application
 npm install
 npx prisma migrate
 npx prisma generate
 npm run dev
 ```
+
+
 
 # Conclusion
 
