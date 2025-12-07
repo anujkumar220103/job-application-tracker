@@ -1,15 +1,17 @@
 // src/controllers/authController.ts
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { prisma } from "@/lib/prisma";
-
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) throw new Error("JWT_SECRET not set in env");
 
 type RegisterInput = { name: string; email: string; password: string };
 type LoginInput = { email: string; password: string };
 
 export async function registerUser(input: RegisterInput) {
+  // lazy import prisma inside function to avoid module-level side effects
+  const prisma = (await import('@/lib/prisma')).default;
+
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) throw new Error("JWT_SECRET not set in env");
+
   const { name, email, password } = input;
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -35,6 +37,11 @@ export async function registerUser(input: RegisterInput) {
 }
 
 export async function loginUser(input: LoginInput) {
+  const prisma = (await import('@/lib/prisma')).default;
+
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) throw new Error("JWT_SECRET not set in env");
+
   const { email, password } = input;
 
   const user = await prisma.user.findUnique({ where: { email } });
@@ -43,7 +50,9 @@ export async function loginUser(input: LoginInput) {
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) throw { status: 401, message: "Invalid credentials" };
 
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+    expiresIn: "7d",
+  });
 
   const safeUser = {
     id: user.id,

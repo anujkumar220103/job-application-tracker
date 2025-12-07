@@ -1,6 +1,6 @@
 // src/lib/auth.ts
 import jwt from "jsonwebtoken";
-import { prisma } from "@/lib/prisma";
+const prisma = (await import('@/lib/prisma')).default;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error("JWT_SECRET not set");

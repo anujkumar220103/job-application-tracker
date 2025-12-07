@@ -16,7 +16,8 @@ export default function JobsPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        setJobs(data.data || []);
+        console.log("Fetched jobs:", data);
+        setJobs(Array.isArray(data) ? data : data.data || []);   // handle different response formats
       } catch (err) {
         console.error("Error fetching jobs:", err);
       }

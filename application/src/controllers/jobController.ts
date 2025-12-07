@@ -1,5 +1,5 @@
 // src/controllers/jobController.ts
-import { prisma } from "@/lib/prisma";
+const prisma = (await import('@/lib/prisma')).default;
 
 export type CreateJobInput = {
   company: string;

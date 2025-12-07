@@ -6,7 +6,7 @@ const { defineConfig } = require("@prisma/config");
 module.exports = defineConfig({
   schema: "./prisma/schema.prisma",
   datasource: {
-    provider: "mysql",
+    provider: "postgresql",
     url: process.env.DATABASE_URL,
   },
   generator: {
