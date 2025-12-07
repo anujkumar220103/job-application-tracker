@@ -10,7 +10,7 @@ export async function getUserFromRequest(req: Request) {
   const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
   if (!token) return null;
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { id: number | string; email?: string };
+    const payload = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
     const id = typeof payload.id === "number" ? payload.id : Number(payload.id);
     const user = await prisma.user.findUnique({ where: { id } });
     return user;
