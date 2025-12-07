@@ -15,7 +15,7 @@ export default function JobCard({ job, onDelete, onUpdate }: JobCardProps) {
   console.log("JobCard render:", job);
 
   // defensive values
-  const position = job.position ?? job.title ?? "Untitled role";
+  const position = job.position ?? "Untitled role";
   const company = job.company ?? "Unknown company";
   const location = job.location ?? "Unknown location";
   const statusRaw = job.status ?? "unknown";
