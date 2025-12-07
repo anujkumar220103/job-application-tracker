@@ -1,8 +1,10 @@
 // src/lib/auth.ts
 import jwt from "jsonwebtoken";
+import { JwtPayload, Secret } from "jsonwebtoken";
+
 const prisma = (await import('@/lib/prisma')).default;
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET as Secret;
 if (!JWT_SECRET) throw new Error("JWT_SECRET not set");
 
 export async function getUserFromRequest(req: Request) {
