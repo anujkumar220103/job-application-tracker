@@ -48,19 +48,24 @@ A full-stack platform to track job applications with a powerful **Chrome Extensi
 
 ### Environment Variables
 
-The app uses environment variables to configure the application. Create a `.env` file inside the `frontend/` directory with the following variables:
+The app uses environment variables to configure the application. Create a `.env.local` file inside the `application/` directory with the following variables:
 
 ```env
-DATABASE_URL="mysql://<userID>:<password>@localhost:3306/jobtracker"
-JWT_SECRET="your secret"
-CLIENT_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:4000/api
+DATABASE_URL="postgresql://<user>:<password>@localhost:5432/jobtracker"
+JWT_SECRET="replace-with-a-long-random-secret"
 ```
+
+`NEXT_PUBLIC_API_URL` is optional when running this Next.js app locally. Without it, the browser uses the built-in same-origin API routes under `/api`. Set it only when the frontend should call a separately deployed API, for example:
+
+```env
+NEXT_PUBLIC_API_URL="https://your-api.example.com/api"
+```
+
 To run it locally use these command
 ```
 cd application
 npm install
-npx prisma migrate
+npx prisma migrate dev
 npx prisma generate
 npm run dev
 ```

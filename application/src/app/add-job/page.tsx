@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import api from "../api/client";
+import { API_BASE_URL } from "@/lib/apiBase";
 
 export default function AddJobPage() {
   const [form, setForm] = useState({
@@ -19,7 +20,7 @@ export default function AddJobPage() {
     e.preventDefault();
     try {
         const token =localStorage.getItem("token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs`, {
+      const res = await fetch(`${API_BASE_URL}/jobs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

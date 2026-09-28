@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Job } from "@/types";
+import { API_BASE_URL } from "@/lib/apiBase";
 
 export default function DashboardPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -9,7 +10,7 @@ export default function DashboardPage() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs`, {
+        const res = await fetch(`${API_BASE_URL}/jobs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
