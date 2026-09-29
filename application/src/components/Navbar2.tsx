@@ -9,25 +9,25 @@ const Navbar2 = () => {
   const links = [
     { href: "/", label: "Home" },
     { href: "/login", label: "Login" },
-    { href: "/signup", label: "signup" },
-    // { href: "/dashboard", label: "Dashboard" },
+    { href: "/signup", label: "Signup" },
   ];
 
   return (
-    <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
-        <Link href="/" className="text-xl font-semibold text-blue-600">
-          Application Tracker
+    <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-white">
+      <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:px-5">
+        <Link href="/" className="flex min-w-0 flex-col leading-tight text-[var(--foreground)]">
+          <span className="font-bold tracking-tight">Application Tracker</span>
+          <span className="mt-1 text-xs font-normal text-[var(--muted)]">Your job search, organized.</span>
         </Link>
-        <div className="space-x-4">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`text-sm font-medium ${
+              className={`rounded-md px-3 py-2 text-sm font-semibold ${
                 pathname === href
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-blue-500"
+                  ? "bg-[var(--brand-soft)] text-[var(--brand-dark)]"
+                  : "text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)]"
               }`}
             >
               {label}

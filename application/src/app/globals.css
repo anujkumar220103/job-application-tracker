@@ -1,26 +1,122 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f6f8;
+  --foreground: #17212b;
+  --surface: #ffffff;
+  --surface-muted: #eef2f4;
+  --border: #dbe2e7;
+  --muted: #66737d;
+  --brand: #0f766e;
+  --brand-dark: #115e59;
+  --brand-soft: #d9f0ec;
+  --danger: #b42318;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "DM Sans", "Avenir Next", "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "DM Sans", "Avenir Next", "Segoe UI", sans-serif;
+  margin: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select { font: inherit; }
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.28);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  min-height: calc(100vh - 73px);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 42px 28px 72px;
+}
+
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.eyebrow {
+  color: var(--brand);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  color: #17212b;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.page-copy { color: var(--muted); line-height: 1.6; margin: 10px 0 0; }
+
+.hero-section { padding: 80px 0 96px; text-align: center; }
+.hero-container { margin-inline: auto; max-width: 900px; text-align: center; }
+.hero-eyebrow { color: var(--brand); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.01em; line-height: 1.4; margin: 0; }
+.hero-title { color: var(--foreground); font-size: clamp(2.25rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.08; margin: 14px auto 0; }
+.hero-description { color: var(--muted); line-height: 1.6; margin: 22px auto 0; max-width: 750px; }
+
+.button-primary, .button-secondary, .button-danger {
+  align-items: center;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.button-primary { background: var(--brand); border: 1px solid var(--brand); color: white; }
+.button-primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+.button-secondary { background: var(--surface); border: 1px solid var(--border); color: #34434d; }
+.button-secondary:hover { background: var(--surface-muted); border-color: #b9c5cc; }
+.button-danger { background: transparent; border: 1px solid #e1b8b4; color: var(--danger); }
+.button-danger:hover { background: #fff5f3; border-color: #d99b95; }
+
+.field-label { color: #34434d; display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 7px; }
+.field-input {
+  background: #fbfcfc;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--foreground);
+  min-height: 44px;
+  padding: 0 12px;
+  width: 100%;
+}
+.field-input::placeholder { color: #8b969e; }
+.field-input:focus { border-color: var(--brand); outline: none; }
+
+.status-badge { border-radius: 999px; display: inline-flex; font-size: 0.72rem; font-weight: 800; padding: 5px 9px; }
+.status-applied { background: #e4effa; color: #245b8e; }
+.status-interview { background: #f6ecd6; color: #825d19; }
+.status-offer { background: #dff1e6; color: #23623a; }
+.status-rejected { background: #f8e1df; color: #973b34; }
+.skeleton { animation: pulse 1.6s ease-in-out infinite; background: #e6ecef; border-radius: 6px; }
+@keyframes pulse { 50% { opacity: 0.55; } }
+
+@media (max-width: 640px) {
+  .app-shell { padding: 28px 16px 52px; }
+  .hero-section { padding: 56px 0 64px; }
 }

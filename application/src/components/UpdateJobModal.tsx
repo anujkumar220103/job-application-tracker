@@ -33,71 +33,73 @@ export default function UpdateJobModal({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-blue-600">Update Job</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17212b]/45 p-4" role="dialog" aria-modal="true" aria-labelledby="update-job-title">
+      <div className="surface w-full max-w-md p-6 sm:p-8">
+        <p className="eyebrow">Application details</p><h2 id="update-job-title" className="page-title mt-2 text-2xl">Edit application</h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+          <label className="field-label" htmlFor="edit-company">Company</label>
           <input
+            id="edit-company"
             type="text"
             name="company"
             value={formData.company}
             onChange={handleChange}
-            placeholder="Company"
-            className="border p-2 rounded text-black"
+            className="field-input"
             required
           />
-          <input
+          <label className="field-label" htmlFor="edit-position">Position</label><input
+            id="edit-position"
             type="text"
             name="position"
             value={formData.position}
             onChange={handleChange}
-            placeholder="Position"
-            className="border p-2 rounded text-black" 
+            className="field-input"
             required
           />
-          <input
+          <label className="field-label" htmlFor="edit-location">Location</label><input
+            id="edit-location"
             type="text"
             name="location"
             value={formData.location}
             onChange={handleChange}
-            placeholder="Location"
-            className="border p-2 rounded text-black"
+            className="field-input"
             required
           />
-          <select
+          <label className="field-label" htmlFor="edit-status">Status</label><select
+            id="edit-status"
             name="status"
             value={formData.status}
             onChange={handleChange}
-            className="border p-2 rounded text-black"
+            className="field-input"
           >
             <option value="applied">Applied</option>
             <option value="interview">Interview</option>
             <option value="offer">Offer</option>
             <option value="rejected">Rejected</option>
           </select>
-          <input
+          <label className="field-label" htmlFor="edit-link">Application link</label><input
+            id="edit-link"
             type="text"
             name="link"
             value={formData.link}
             onChange={handleChange}
-            placeholder="Application Link"
-            className="border p-2 rounded text-black"
+            className="field-input"
           />
 
-          <button
+          <div className="flex gap-3 pt-2"><button
             type="submit"
-            className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+            className="button-primary"
           >
-            Update Job
+            Save changes
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-600 mt-2 hover:underline"
+            className="button-secondary"
           >
             Cancel
-          </button>
+          </button></div>
         </form>
       </div>
     </div>

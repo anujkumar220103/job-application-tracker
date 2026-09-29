@@ -1,13 +1,12 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/apiBase";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleLogin = async () => {
     setLoading(true);
@@ -33,44 +32,23 @@ export default function LoginPage() {
       // ✅ Redirect to dashboard
     //   router.push("/dashboard");
     window.location.href = "/";
-    } catch (err:any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="max-w-sm mx-auto mt-20 bg-white p-6 rounded-lg shadow">
-      <h1 className="text-xl font-bold mb-4 text-blue-600">Login</h1>
-
-      {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-        className="border p-2 w-full text-black rounded mb-3"
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-        className="border p-2 w-full text-black rounded mb-3"
-      />
-
-      <button
-        onClick={handleLogin}
-        disabled={loading}
-        className={`w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 ${
-          loading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        {loading ? "Logging in..." : "Login"}
-      </button>
+    <section className="mx-auto mt-10 max-w-md">
+      <div className="mb-8"><p className="eyebrow">Welcome back</p><h1 className="page-title mt-2">Sign in</h1><p className="page-copy">Pick up your application search where you left off.</p></div>
+      <form onSubmit={(event) => { event.preventDefault(); void handleLogin(); }} className="surface grid gap-5 p-6 sm:p-8">
+        {error && <p className="rounded-md bg-[#fff1ef] px-4 py-3 text-sm font-bold text-[var(--danger)]">{error}</p>}
+        <div><label className="field-label" htmlFor="email">Email</label><input id="email" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="field-input" required /></div>
+        <div><label className="field-label" htmlFor="password">Password</label><input id="password" type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} className="field-input" required /></div>
+        <button type="submit" disabled={loading} className="button-primary w-full">{loading ? "Signing in..." : "Sign in"}</button>
+        <p className="text-center text-sm text-[var(--muted)]">New here? <Link href="/signup" className="font-bold text-[var(--brand)]">Create an account</Link></p>
+      </form>
     </section>
   );
 }

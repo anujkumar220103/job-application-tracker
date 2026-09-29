@@ -4,10 +4,13 @@ import JobCard from "@/components/JobCard";
 import UpdateJobModal from "@/components/UpdateJobModal";
 import { Job } from "@/types";
 import { API_BASE_URL } from "@/lib/apiBase";
+import Link from "next/link";
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -21,6 +24,9 @@ export default function JobsPage() {
         setJobs(Array.isArray(data) ? data : data.data || []);   // handle different response formats
       } catch (err) {
         console.error("Error fetching jobs:", err);
+        setError("We couldn't load your applications. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchJobs();
@@ -81,11 +87,16 @@ export default function JobsPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold mb-6 text-blue-600">
-        Your Applications
-      </h1>
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div><p className="eyebrow">Application workspace</p><h1 className="page-title mt-2">Your applications</h1><p className="page-copy">Keep the details and next step for every opportunity in one place.</p></div>
+        <Link href="/add-job" className="button-primary">Add application</Link>
+      </div>
 
-      {jobs.length > 0 ? (
+      {loading ? (
+        <div className="grid gap-3">{[1, 2, 3].map((item) => <div key={item} className="surface p-5"><div className="skeleton h-5 w-1/2" /><div className="skeleton mt-3 h-4 w-1/3" /><div className="skeleton mt-3 h-3 w-1/4" /></div>)}</div>
+      ) : error ? (
+        <div className="surface p-8"><p className="font-bold text-[var(--foreground)]">Unable to load applications</p><p className="mt-2 text-sm text-[var(--muted)]">{error}</p></div>
+      ) : jobs.length > 0 ? (
         <div className="grid gap-4">
           {jobs.map((job) => (
             <JobCard
@@ -97,7 +108,7 @@ export default function JobsPage() {
           ))}
         </div>
       ) : (
-        <p className="text-gray-600">No job applications yet.</p>
+        <div className="surface p-10 text-center"><p className="font-bold text-[var(--foreground)]">No applications yet</p><p className="page-copy">Start tracking your applications by adding your first job.</p><Link href="/add-job" className="button-primary mt-6">Add application</Link></div>
       )}
 
       {/* 🟦 Modal for update */}

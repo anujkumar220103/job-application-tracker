@@ -2,16 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  // close mobile menu on route change
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   // ensure pathname is a string (safety for environments where it could be undefined/null)
   const currentPath = typeof pathname === "string" ? pathname : "/";
@@ -28,7 +23,7 @@ export default function Navbar() {
       try {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-      } catch (e) {
+      } catch {
         // ignore storage errors
         // console.warn("Failed to clear localStorage", e);
       }
@@ -38,26 +33,24 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b sticky top-0 z-50" aria-label="Main navigation">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="text-xl font-semibold text-blue-600">
-            Application Tracker
-          </Link>
-          {/* small helper - visible on md and up */}
-          <span className="hidden md:inline-block text-sm text-gray-500">Keep track of your applications</span>
+    <nav className="border-b border-[var(--border)] bg-white sticky top-0 z-50" aria-label="Main navigation">
+      <div className="flex w-full items-center justify-between gap-6 px-4 py-3 sm:px-5">
+        <div className="flex flex-col leading-tight">
+          <Link href="/" className="font-bold tracking-tight text-[var(--foreground)]">Application Tracker</Link>
+          <span className="mt-1 text-xs text-[var(--muted)]">Your job search, organized.</span>
         </div>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-4" role="menubar">
+        <div className="hidden items-center gap-1 md:flex" role="menubar">
           {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`text-sm font-medium px-2 py-1 rounded-md transition-colors ${
-                currentPath === href ? "text-blue-600 bg-blue-50" : "text-gray-600 hover:text-blue-500 hover:bg-gray-50"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                currentPath === href ? "bg-[var(--brand-soft)] text-[var(--brand-dark)]" : "text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)]"
               }`}
               aria-current={currentPath === href ? "page" : undefined}
+              onClick={() => setOpen(false)}
             >
               {label}
             </Link>
@@ -65,7 +58,7 @@ export default function Navbar() {
 
           <button
             onClick={logout}
-            className="text-sm font-medium px-3 py-1 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 transition"
+            className="button-secondary ml-2 min-h-9 px-3 text-sm"
             aria-label="Logout"
           >
             Logout
@@ -98,13 +91,13 @@ export default function Navbar() {
       <div
         className={`md:hidden transition-all duration-200 overflow-hidden bg-white border-t ${open ? "max-h-[400px]" : "max-h-0"}`}
       >
-        <div className="px-4 py-3 flex flex-col gap-2">
+        <div className="flex flex-col gap-2 px-4 py-3">
           {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`block text-sm font-medium px-2 py-2 rounded-md ${
-                currentPath === href ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              className={`block rounded-md px-3 py-2 text-sm font-semibold ${
+                currentPath === href ? "bg-[var(--brand-soft)] text-[var(--brand-dark)]" : "text-gray-700 hover:bg-gray-50 hover:text-[var(--brand-dark)]"
               }`}
               aria-current={currentPath === href ? "page" : undefined}
             >
@@ -114,7 +107,7 @@ export default function Navbar() {
 
           <button
             onClick={logout}
-            className="w-full text-left text-sm font-medium px-2 py-2 rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50"
+            className="button-secondary w-full justify-start text-left text-sm"
             aria-label="Logout"
           >
             Logout
