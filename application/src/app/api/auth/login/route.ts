@@ -1,16 +1,16 @@
-
-import { NextResponse } from "next/server";
-import { loginUser } from "@/controllers/authController";
+import { loginSchema } from "@/lib/validation";
+import { successResponse, validationError, handleRouteError } from "@/lib/responseHandler";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const result = await loginUser(body);
-    return NextResponse.json(result);
-  } catch (err: any) {
-    const status = err?.status || 500;
-    const message = err?.message || "Server error";
-    return NextResponse.json({ error: message }, { status });
+    const body = await req.json().catch(() => ({}));
+    const parsed = loginSchema.safeParse(body);
+    if (!parsed.success) return validationError(parsed.error);
+
+    const { loginUser } = await import("@/controllers/authController");
+    const result = await loginUser(parsed.data);
+    return successResponse(result, 200);
+  } catch (err) {
+    return handleRouteError(err);
   }
 }
- 

@@ -1,6 +1,7 @@
 // src/controllers/authController.ts
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { getJwtSecret } from "@/lib/env";
 
 type RegisterInput = { name: string; email: string; password: string };
 type LoginInput = { email: string; password: string };
@@ -9,14 +10,11 @@ export async function registerUser(input: RegisterInput) {
   // lazy import prisma inside function to avoid module-level side effects
   const prisma = (await import('@/lib/prisma')).default;
 
-  const JWT_SECRET = process.env.JWT_SECRET;
-  if (!JWT_SECRET) throw new Error("JWT_SECRET not set in env");
-
   const { name, email, password } = input;
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
-    throw { status: 400, message: "Email already in use" };
+    throw { status: 409, code: "CONFLICT", message: "Email already in use" };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,18 +37,26 @@ export async function registerUser(input: RegisterInput) {
 export async function loginUser(input: LoginInput) {
   const prisma = (await import('@/lib/prisma')).default;
 
-  const JWT_SECRET = process.env.JWT_SECRET;
-  if (!JWT_SECRET) throw new Error("JWT_SECRET not set in env");
-
   const { email, password } = input;
 
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw { status: 404, message: "User not found" };
+
+  // Prevent user enumeration: unknown email and wrong password return the
+  // same error. Still run a bcrypt comparison to reduce timing differences.
+  const invalidCredentials = { status: 401, code: "INVALID_CREDENTIALS", message: "Invalid email or password" };
+  // Constant, valid bcrypt hash used only to equalize timing when the email
+  // is unknown. It is not a real credential.
+  const DUMMY_HASH = "$2b$10$dhVaAReu.7B/.UID.HoYJ.cVtJaXQ8GROeChhVWHDAECZFppLcOwO";
+
+  if (!user) {
+    await bcrypt.compare(password, DUMMY_HASH);
+    throw invalidCredentials;
+  }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) throw { status: 401, message: "Invalid credentials" };
+  if (!isPasswordValid) throw invalidCredentials;
 
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+  const token = jwt.sign({ id: user.id, email: user.email }, getJwtSecret(), {
     expiresIn: "7d",
   });
 

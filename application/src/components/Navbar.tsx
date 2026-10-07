@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout: clearAuth } = useAuth();
   const [open, setOpen] = useState(false);
 
-  // ensure pathname is a string (safety for environments where it could be undefined/null)
   const currentPath = typeof pathname === "string" ? pathname : "/";
 
   const links = [
@@ -19,17 +21,8 @@ export default function Navbar() {
   ];
 
   const logout = () => {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      } catch {
-        // ignore storage errors
-        // console.warn("Failed to clear localStorage", e);
-      }
-      // use next/link navigation alternative if needed — for simplicity use location
-      window.location.href = "/"; // redirect to login/home
-    }
+    clearAuth();
+    router.push("/login");
   };
 
   return (
@@ -40,7 +33,6 @@ export default function Navbar() {
           <span className="mt-1 text-xs text-[var(--muted)]">Your job search, organized.</span>
         </div>
 
-        {/* Desktop links */}
         <div className="hidden items-center gap-1 md:flex" role="menubar">
           {links.map(({ href, label }) => (
             <Link
@@ -65,7 +57,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile menu button */}
         <div className="md:hidden flex items-center">
           <button
             aria-label={open ? "Close menu" : "Open menu"}
@@ -73,7 +64,6 @@ export default function Navbar() {
             onClick={() => setOpen((s) => !s)}
             className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
           >
-            {/* Hamburger / X icon */}
             {open ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -87,7 +77,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu panel - slide down */}
       <div
         className={`md:hidden transition-all duration-200 overflow-hidden bg-white border-t ${open ? "max-h-[400px]" : "max-h-0"}`}
       >

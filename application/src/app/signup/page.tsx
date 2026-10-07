@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { API_BASE_URL } from "@/lib/apiBase";
 import Link from "next/link";
+import { apiRequest, errorMessage } from "@/lib/apiClient";
 
 export default function SignupPage() {
   const [form, setForm] = useState({ email: "", password: "" ,name:""});
@@ -12,23 +12,10 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Signup failed");
-      }
-      
-    window.location.href = "/login";
+      await apiRequest(`/auth/register`, { method: "POST", body: form });
+      window.location.href = "/login";
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Signup failed");
+      setError(errorMessage(err, "Signup failed"));
     } finally {
       setLoading(false);
     }

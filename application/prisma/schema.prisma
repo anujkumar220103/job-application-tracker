@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
 }
@@ -15,8 +16,20 @@ model Job {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Kept nullable intentionally: the existing relation uses onDelete: SetNull,
+  // so deleting a user leaves their jobs with a null userId. Making this
+  // required would require a data backfill/cleanup of any existing orphaned
+  // rows in production, which is not safe to do blindly. See README.
   userId Int?
   user   User? @relation(fields: [userId], references: [id])
+
+  timeline  JobTimelineEvent[]
+  interviews Interview[]
+  reminders  Reminder[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
 }
 
 model User {
@@ -28,4 +41,53 @@ model User {
   updatedAt DateTime @updatedAt
 
   jobs Job[]
+}
+
+model JobTimelineEvent {
+  id          Int      @id @default(autoincrement())
+  jobId       Int
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  type        String
+  title       String
+  description String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([jobId])
+}
+
+model Interview {
+  id        Int      @id @default(autoincrement())
+  jobId     Int
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  title     String
+  type      String?
+  dateTime  DateTime
+  interviewer String?
+  meetingLink String?
+  location  String?
+  notes     String?
+  status    String   @default("scheduled")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jobId])
+}
+
+model Reminder {
+  id        Int       @id @default(autoincrement())
+  jobId     Int
+  job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  title     String    @default("")
+  message   String
+  notes     String?
+  dueAt     DateTime
+  remindAt  DateTime  @default(now())
+  sentAt    DateTime?
+  isSent    Boolean   @default(false)
+  completed Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([jobId])
 }

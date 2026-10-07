@@ -1,11 +1,11 @@
 // src/app/api/auth/me/route.ts
-import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth";
+import { successResponse, errorResponse, handleRouteError } from "@/lib/responseHandler";
 
 export async function GET(req: Request) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user) return errorResponse("UNAUTHORIZED", "Unauthorized");
 
     const safeUser = {
       id: user.id,
@@ -15,8 +15,8 @@ export async function GET(req: Request) {
       updatedAt: user.updatedAt,
     };
 
-    return NextResponse.json({ user: safeUser });
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Server error" }, { status: err?.status || 500 });
+    return successResponse({ user: safeUser }, 200);
+  } catch (err) {
+    return handleRouteError(err);
   }
 }

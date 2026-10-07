@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 // frontend/prisma.config.cjs
 const path = require("path");
 

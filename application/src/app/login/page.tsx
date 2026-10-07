@@ -1,9 +1,16 @@
 "use client";
+
 import { useState } from "react";
-import { API_BASE_URL } from "@/lib/apiBase";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { apiRequest, errorMessage } from "@/lib/apiClient";
+
+type LoginResult = { token: string; user: { id: number; name: string; email: string; createdAt: string; updatedAt: string } };
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,27 +20,16 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      const { data } = await apiRequest<LoginResult>(`/auth/login`, { method: "POST", body: form });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
+      if (!data?.token || !data?.user) {
+        throw new Error("Invalid login response");
       }
-      // ✅ Save token to localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", data.name);
-      // ✅ Redirect to dashboard
-    //   router.push("/dashboard");
-    window.location.href = "/";
+
+      login(data.token, data.user);
+      router.push("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(errorMessage(err, "Login failed"));
     } finally {
       setLoading(false);
     }
