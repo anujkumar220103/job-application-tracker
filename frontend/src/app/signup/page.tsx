@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { apiRequest, errorMessage } from "@/lib/apiClient";
 
-export default function SignupPage() {
+function SignupForm() {
+  const searchParams = useSearchParams();
   const [form, setForm] = useState({ email: "", password: "" ,name:""});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,7 +15,9 @@ export default function SignupPage() {
     setError("");
     try {
       await apiRequest(`/auth/register`, { method: "POST", body: form });
-      window.location.href = "/login";
+      // Forward the install intent through to login so the chain continues.
+      const next = searchParams.get("next");
+      window.location.href = next === "install" ? "/login?next=install" : "/login";
     } catch (err: unknown) {
       setError(errorMessage(err, "Signup failed"));
     } finally {
@@ -33,5 +37,13 @@ export default function SignupPage() {
         <p className="text-center text-sm text-[var(--muted)]">Already have an account? <Link href="/login" className="font-bold text-[var(--brand)]">Sign in</Link></p>
       </form>
     </section>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
   );
 }

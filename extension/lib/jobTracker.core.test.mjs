@@ -42,6 +42,63 @@ test("labelMatchesApply rejects unrelated or overly long text", () => {
   assert.equal(Core.labelMatchesApply("Save"), false);
 });
 
+test("parseLinkedInLocationFromPrimary extracts the location segment (LinkedIn-only)", () => {
+  assert.equal(
+    Core.parseLinkedInLocationFromPrimary("Lumenci · India (Remote) · 2 weeks ago · 30 applicants"),
+    "India (Remote)",
+  );
+  assert.equal(
+    Core.parseLinkedInLocationFromPrimary("Acme Corp · Bengaluru, Karnataka, India · Promoted"),
+    "Bengaluru, Karnataka, India",
+  );
+  assert.equal(
+    Core.parseLinkedInLocationFromPrimary("Globex · Remote · Reposted 3 days ago"),
+    "Remote",
+  );
+});
+
+test("parseLinkedInLocationFromPrimary falls back to the 2nd segment, skips noise, handles empty", () => {
+  // No strong location signal -> second segment.
+  assert.equal(Core.parseLinkedInLocationFromPrimary("Company · Hyderabad · 1 day ago"), "Hyderabad");
+  // Only company + noise -> empty (don't misreport "ago"/applicants as location).
+  assert.equal(Core.parseLinkedInLocationFromPrimary("Company · 10 applicants"), "");
+  assert.equal(Core.parseLinkedInLocationFromPrimary(""), "");
+  assert.equal(Core.parseLinkedInLocationFromPrimary("JustOneSegment"), "");
+});
+
+test("buildBestEffortPayload substitutes placeholders for missing fields (never blocks)", () => {
+  // Internshala-style: location missing, everything else present.
+  const p = Core.buildBestEffortPayload({
+    company: "ABC Company",
+    position: "Software Development Intern",
+    location: "",
+    link: "https://internshala.com/internship/detail/123",
+  });
+  assert.equal(p.company, "ABC Company");
+  assert.equal(p.position, "Software Development Intern");
+  assert.equal(p.location, "Unknown"); // placeholder, not a failure
+  assert.equal(p.status, "applied");
+  assert.equal(p.link, "https://internshala.com/internship/detail/123");
+});
+
+test("buildBestEffortPayload fills all placeholders when nothing scraped, keeps valid link", () => {
+  const p = Core.buildBestEffortPayload({ link: "https://x/y" });
+  assert.deepEqual(p, { company: "Unknown", position: "Unknown", location: "Unknown", status: "applied", link: "https://x/y" });
+});
+
+test("buildBestEffortPayload drops a non-http link to empty string (backend-safe)", () => {
+  const p = Core.buildBestEffortPayload({ company: "A", position: "B", location: "C", link: "javascript:alert(1)" });
+  assert.equal(p.link, "");
+});
+
+test("buildBestEffortPayload treats 'Unknown' scrape as missing -> placeholder", () => {
+  const p = Core.buildBestEffortPayload({ company: "Unknown", position: "Dev", location: "Unknown", link: "" });
+  assert.equal(p.company, "Unknown");
+  assert.equal(p.position, "Dev");
+  assert.equal(p.location, "Unknown");
+  assert.equal(p.link, "");
+});
+
 test("validateJob flags missing/placeholder fields", () => {
   assert.deepEqual(
     Core.validateJob({ company: "Unknown", position: "", location: "Unknown", link: "notaurl" }).missing.sort(),

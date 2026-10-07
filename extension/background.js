@@ -25,7 +25,7 @@ async function sendJobToBackend(job, token) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(Core.buildJobPayload(job)),
+      body: JSON.stringify(Core.buildBestEffortPayload(job)),
     });
   } catch {
     return { success: false, type: "NETWORK_ERROR", message: "Could not reach the Job Tracker server." };
@@ -40,6 +40,50 @@ async function sendJobToBackend(job, token) {
 
   return Core.mapResponseToResult(res.status, payload);
 }
+
+// ---------------------------------------------------------------------------
+// Lifecycle recovery: after the extension is installed/updated/reloaded, the
+// content script already running in open tabs is orphaned (its chrome.* APIs
+// are dead and cannot be revived in place — an MV3 constraint). To avoid
+// forcing the user to manually refresh, the service worker re-injects a fresh
+// content script into already-open supported tabs. The content script's
+// init guard ensures no duplicate listeners/submissions result.
+// ---------------------------------------------------------------------------
+const SUPPORTED_URL_MATCHES = [
+  "*://*.linkedin.com/*",
+  "*://*.unstop.com/*",
+  "*://*.internshala.com/*",
+];
+
+function reinjectIntoOpenTabs() {
+  // Guard: chrome.scripting may be unavailable in some contexts.
+  if (!chrome.scripting || !chrome.tabs) return;
+
+  chrome.tabs.query({ url: SUPPORTED_URL_MATCHES }, (tabs) => {
+    if (chrome.runtime.lastError) return;
+    for (const tab of tabs || []) {
+      if (typeof tab.id !== "number") continue;
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: tab.id },
+          // Inject the shared core first, then the content script — same order
+          // as the manifest's declarative content_scripts.
+          files: ["lib/jobTracker.core.js", "content.js"],
+        },
+        () => {
+          // Swallow expected errors (e.g. restricted pages, tab closed).
+          void chrome.runtime.lastError;
+        },
+      );
+    }
+  });
+}
+
+// Fires on install, update, and when the user clicks "Reload" in
+// chrome://extensions (treated as an update/install of the unpacked extension).
+chrome.runtime.onInstalled.addListener(reinjectIntoOpenTabs);
+// Fires when the browser starts and the service worker spins up.
+chrome.runtime.onStartup.addListener(reinjectIntoOpenTabs);
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type === "LOG_JOB") {

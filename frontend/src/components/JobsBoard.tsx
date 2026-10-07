@@ -5,6 +5,17 @@ import { Job } from "@/types";
 import { getJobStatusLabel, JOB_STATUS_OPTIONS, JobStatus } from "@/lib/jobStatus";
 import { groupJobsByStatus } from "@/lib/jobPipeline";
 
+// Only http/https links may be opened. Rejects javascript:, data:, file:, etc.
+function isValidHttpUrl(value: string | null | undefined): boolean {
+  if (!value) return false;
+  try {
+    const u = new URL(value);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export type BoardFilters = {
   search: string;
   status: "all" | JobStatus;
@@ -61,7 +72,8 @@ export default function JobsBoard({
   onDelete,
   onUpdate,
   onStatusChange,
-  onSelect,
+  // onSelect is still accepted from the parent for compatibility but is no
+  // longer wired to a button (the "Details" action was replaced by "Link").
 }: JobsBoardProps) {
   const [draggedJobId, setDraggedJobId] = useState<number | null>(null);
 
@@ -171,7 +183,7 @@ export default function JobsBoard({
               </span>
             </div>
 
-            <div className="space-y-3">
+            <div className="max-h-60 space-y-3 overflow-y-auto pr-1">
               {groupedJobs[status].length === 0 ? (
                 <div className="rounded-lg border border-dashed border-[var(--border)] p-4 text-sm text-[var(--muted)]">
                   No applications
@@ -202,11 +214,23 @@ export default function JobsBoard({
                           Edit
                         </button>
                       )}
-                      {onSelect && (
-                        <button type="button" className="button-secondary min-h-8 shrink-0 px-2 text-[11px]" onClick={() => onSelect(job)}>
-                          Details
-                        </button>
-                      )}
+                      {(() => {
+                        const safeLink = isValidHttpUrl(job.link) ? job.link : null;
+                        return (
+                          <button
+                            type="button"
+                            className="button-secondary min-h-8 shrink-0 px-2 text-[11px]"
+                            onClick={() => {
+                              if (safeLink) window.open(safeLink, "_blank", "noopener,noreferrer");
+                            }}
+                            disabled={!safeLink}
+                            aria-label="Open application link"
+                            title={safeLink ? "Open application link" : "No application link available"}
+                          >
+                            Link
+                          </button>
+                        );
+                      })()}
                       {onDelete && (
                         <button type="button" className="button-danger min-h-8 shrink-0 px-2 text-[11px]" onClick={() => onDelete(job.id)}>
                           Delete

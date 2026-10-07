@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { apiRequest, errorMessage } from "@/lib/apiClient";
 
 type LoginResult = { token: string; user: { id: number; name: string; email: string; createdAt: string; updatedAt: string } };
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,9 @@ export default function LoginPage() {
       }
 
       login(data.token, data.user);
-      router.push("/dashboard");
+      // Preserve "install extension" intent across authentication.
+      const next = searchParams.get("next");
+      router.push(next === "install" ? "/dashboard?install=1" : "/dashboard");
     } catch (err: unknown) {
       setError(errorMessage(err, "Login failed"));
     } finally {
@@ -46,5 +49,13 @@ export default function LoginPage() {
         <p className="text-center text-sm text-[var(--muted)]">New here? <Link href="/signup" className="font-bold text-[var(--brand)]">Create an account</Link></p>
       </form>
     </section>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
