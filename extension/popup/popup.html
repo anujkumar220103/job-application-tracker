@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Job Tracker</title>
+    <style>
+      body {
+        width: 320px;
+        margin: 0;
+        font: 14px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
+        color: #17212b;
+        background: #f7f9f9;
+      }
+      header {
+        padding: 12px 14px;
+        background: #0f7b6c;
+        color: #fff;
+      }
+      header h1 { margin: 0; font-size: 15px; }
+      #auth { font-size: 12px; margin-top: 2px; opacity: 0.95; }
+      main { padding: 10px 14px; max-height: 360px; overflow-y: auto; }
+      .job {
+        background: #fff;
+        border: 1px solid #e2e8e8;
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+      }
+      .job .pos { font-weight: 700; }
+      .job .co { color: #46545d; }
+      .job .meta { color: #6b7a82; font-size: 12px; margin-top: 2px; }
+      .state { color: #6b7a82; padding: 8px 0; }
+      .error { color: #b23b3b; }
+      footer { padding: 10px 14px; border-top: 1px solid #e2e8e8; }
+      button {
+        width: 100%;
+        padding: 8px 10px;
+        border: 0;
+        border-radius: 8px;
+        background: #0f7b6c;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Job Tracker</h1>
+      <div id="auth">Checking session…</div>
+    </header>
+    <main id="content">
+      <div class="state">Loading…</div>
+    </main>
+    <footer>
+      <button id="open-dashboard" type="button">Open Dashboard</button>
+    </footer>
+
+    <script src="../config.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
