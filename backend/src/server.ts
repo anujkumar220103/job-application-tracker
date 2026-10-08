@@ -17,18 +17,45 @@ const app = express();
 // frontend origin(s) rather than using "*", and permit the Authorization
 // header and all HTTP methods the API uses.
 //
-// CORS_ORIGIN may be a comma-separated list. In development it defaults to the
-// Next.js dev server at http://localhost:3000. In production it MUST be set via
-// the environment (no localhost assumption, no invented production URL).
+// CORS_ORIGIN may be a comma-separated list of exact allowed origins. In
+// development it defaults to the Next.js dev server at http://localhost:3000.
+// In production, set it to the deployed frontend origin(s) via the environment.
+//
+// In addition to the configured list, any *.vercel.app origin is allowed so
+// that the Vercel production deployment AND its preview deployments work
+// without having to re-list every generated preview URL. We still never use
+// "*", and credentials stay off (auth travels in the Authorization header).
 const rawOrigins = process.env.CORS_ORIGIN ?? "http://localhost:3000";
 const allowedOrigins = rawOrigins
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);
 
+function isAllowedOrigin(origin: string | undefined): boolean {
+  // Non-browser clients (curl, server-to-server) send no Origin header.
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    const { protocol, hostname } = new URL(origin);
+    // Allow Vercel-hosted frontends (production + preview) over https.
+    if (protocol === "https:" && (hostname === "vercel.app" || hostname.endsWith(".vercel.app"))) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     // Auth uses the Authorization header, not cookies, so credentials stay off.
