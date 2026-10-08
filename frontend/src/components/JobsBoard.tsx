@@ -234,16 +234,33 @@ export default function JobsBoard({
                       )}
                       {(() => {
                         const safeLink = normalizeJobLink(job.link);
-                        return (
+                        // Use a real anchor (not window.open) so the browser treats
+                        // it as a trusted navigation — avoids popup-blocking that can
+                        // silently swallow window.open in production. draggable={false}
+                        // and stopping drag/pointer events keep the click reliable
+                        // inside the draggable card.
+                        return safeLink ? (
+                          <a
+                            href={safeLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onClick={(e) => e.stopPropagation()}
+                            className="button-secondary min-h-8 shrink-0 px-2 text-[11px]"
+                            aria-label="Open application link"
+                            title="Open application link"
+                          >
+                            Link
+                          </a>
+                        ) : (
                           <button
                             type="button"
                             className="button-secondary min-h-8 shrink-0 px-2 text-[11px]"
-                            onClick={() => {
-                              if (safeLink) window.open(safeLink, "_blank", "noopener,noreferrer");
-                            }}
-                            disabled={!safeLink}
+                            disabled
                             aria-label="Open application link"
-                            title={safeLink ? "Open application link" : "No application link available"}
+                            title="No application link available"
                           >
                             Link
                           </button>
