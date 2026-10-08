@@ -14,6 +14,7 @@
     "*://*.linkedin.com/*",
     "*://*.unstop.com/*",
     "*://*.internshala.com/*",
+    "https://job-application-tracker-90dg.onrender.com/*",
     "http://localhost:5000/*"
   ],
 
@@ -31,7 +32,10 @@
       "js": ["lib/jobTracker.core.js", "content.js"]
     },
     {
-      "matches": ["http://localhost:3000/*"],
+      "matches": [
+        "https://job-application-tracker-pi-five.vercel.app/*",
+        "http://localhost:3000/*"
+      ],
       "js": ["saveToken.js"]
     }
   ],

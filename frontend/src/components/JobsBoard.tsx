@@ -5,14 +5,32 @@ import { Job } from "@/types";
 import { getJobStatusLabel, JOB_STATUS_OPTIONS, JobStatus } from "@/lib/jobStatus";
 import { groupJobsByStatus } from "@/lib/jobPipeline";
 
-// Only http/https links may be opened. Rejects javascript:, data:, file:, etc.
-function isValidHttpUrl(value: string | null | undefined): boolean {
-  if (!value) return false;
+// Returns a safe, openable absolute http(s) URL for a stored application link,
+// or null if it can't be made into one. Handles the common real-world case
+// where the saved link has no scheme (e.g. "www.linkedin.com/jobs/view/123")
+// by prepending "https://". Rejects dangerous schemes (javascript:, data:,
+// file:, etc.) and empty/invalid values.
+function normalizeJobLink(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const raw = value.trim();
+  if (!raw) return null;
+
+  // If it already has a scheme, only allow http/https.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) {
+    try {
+      const u = new URL(raw);
+      return u.protocol === "http:" || u.protocol === "https:" ? u.href : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // No scheme → assume https (typical for pasted/scraped job links).
   try {
-    const u = new URL(value);
-    return u.protocol === "http:" || u.protocol === "https:";
+    const u = new URL(`https://${raw}`);
+    return u.href;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -203,8 +221,8 @@ export default function JobsBoard({
                     <p className="font-bold text-[var(--foreground)] break-words">{job.position}</p>
                     <p className="mt-1 text-sm text-[var(--muted)] break-words">{job.company}</p>
                     <p className="mt-2 text-xs text-[var(--muted)] break-words">{job.location}</p>
-                    {job.link && (
-                      <a href={job.link} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs font-bold text-[var(--brand)] hover:underline">
+                    {normalizeJobLink(job.link) && (
+                      <a href={normalizeJobLink(job.link)!} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs font-bold text-[var(--brand)] hover:underline">
                         View
                       </a>
                     )}
@@ -215,7 +233,7 @@ export default function JobsBoard({
                         </button>
                       )}
                       {(() => {
-                        const safeLink = isValidHttpUrl(job.link) ? job.link : null;
+                        const safeLink = normalizeJobLink(job.link);
                         return (
                           <button
                             type="button"

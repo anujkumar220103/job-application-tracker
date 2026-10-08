@@ -2,8 +2,8 @@
 // from the backend. chrome.storage.local holds only the auth token, not jobs.
 
 const CONFIG = globalThis.JOB_TRACKER_CONFIG || {
-  API_BASE_URL: "http://localhost:5000/api",
-  FRONTEND_BASE_URL: "http://localhost:3000",
+  API_BASE_URL: "https://job-application-tracker-90dg.onrender.com/api",
+  FRONTEND_BASE_URL: "https://job-application-tracker-pi-five.vercel.app",
 };
 
 const authEl = document.getElementById("auth");

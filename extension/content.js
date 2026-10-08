@@ -16,7 +16,7 @@
 (function () {
 console.log("[Job Tracker] content script active:", window.location.hostname);
 
-const FRONTEND_BASE_URL = "http://localhost:3000";
+const FRONTEND_BASE_URL = "https://job-application-tracker-pi-five.vercel.app";
 
 // ---------------------------------------------------------------------------
 // Extraction helpers (preserved from the original implementation)
