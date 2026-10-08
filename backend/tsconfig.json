@@ -10,15 +10,8 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "baseUrl": "src",
-    "types": ["node"],
-    "paths": {
-      "@/*": ["*"],
-      "@/lib/*": ["lib/*"],
-      "@/controllers/*": ["controllers/*"]
-    }
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "_legacy_next_route_tests"]
+  "exclude": ["node_modules", "dist", "_legacy_next_route_tests", "src/**/*.test.ts"]
 }
