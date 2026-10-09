@@ -5,7 +5,16 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Modal from "@/components/Modal";
 import { useAuth } from "@/context/AuthContext";
 
-const INSTALL_URL = process.env.NEXT_PUBLIC_CHROME_EXTENSION_INSTALL_URL?.trim() || "";
+// Public store listing for the Job Tracker extension. Used as a safe fallback
+// so the install flow works in every environment (including production) even
+// when NEXT_PUBLIC_CHROME_EXTENSION_INSTALL_URL is not configured. This is a
+// public URL, not a secret, so hardcoding a default here is safe. Set the env
+// var to override (e.g. to point at a Chrome Web Store listing instead).
+const DEFAULT_INSTALL_URL =
+  "https://microsoftedge.microsoft.com/addons/detail/joamfpimcnbpejkadfjcnkcdephfeoej";
+
+const INSTALL_URL =
+  process.env.NEXT_PUBLIC_CHROME_EXTENSION_INSTALL_URL?.trim() || DEFAULT_INSTALL_URL;
 const INTENT_KEY = "jobtracker:installIntent";
 
 // Which onboarding step the modal is showing.
