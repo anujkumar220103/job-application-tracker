@@ -87,17 +87,6 @@ export default function AddExtensionButton() {
     router.push(`${target}?next=install`);
   };
 
-  const openInstallPage = () => {
-    if (!INSTALL_URL) {
-      // No real listing configured yet — move to guidance without navigating
-      // to an invalid URL.
-      setStep("guidance");
-      return;
-    }
-    window.open(INSTALL_URL, "_blank", "noopener,noreferrer");
-    setStep("guidance");
-  };
-
   return (
     <>
       <button
@@ -132,7 +121,15 @@ export default function AddExtensionButton() {
               Save jobs directly from supported job websites (LinkedIn, Unstop, Internshala) to your tracker.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <button type="button" className="button-primary" onClick={openInstallPage}>Add Extension</button>
+              <a
+                href={INSTALL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="button-primary"
+                onClick={() => setStep("guidance")}
+              >
+                Add Extension
+              </a>
               <button type="button" className="button-secondary" onClick={() => setOpen(false)}>Not now</button>
             </div>
           </>
@@ -156,9 +153,14 @@ export default function AddExtensionButton() {
             )}
             <div className="mt-6 flex flex-wrap gap-3">
               {INSTALL_URL && (
-                <button type="button" className="button-primary" onClick={() => window.open(INSTALL_URL, "_blank", "noopener,noreferrer")}>
+                <a
+                  href={INSTALL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="button-primary"
+                >
                   Open Extension Page
-                </button>
+                </a>
               )}
               <button type="button" className="button-secondary" onClick={() => setOpen(false)}>Done</button>
             </div>
