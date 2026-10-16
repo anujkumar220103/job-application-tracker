@@ -6,8 +6,8 @@ import NavbarWrapper from "@/components/NavbarWrapper";
 import AddExtensionButton from "@/components/AddExtensionButton";
 
 export const metadata = {
-  title: "Application Tracker",
-  description: "Track your job applications easily",
+  title: "TrackMate",
+  description: "Track Your Applications, Never Miss an Opportunity",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

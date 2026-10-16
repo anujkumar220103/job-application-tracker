@@ -16,8 +16,8 @@ const Navbar2 = () => {
     <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-white">
       <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:px-5">
         <Link href="/" className="flex min-w-0 flex-col leading-tight text-[var(--foreground)]">
-          <span className="font-bold tracking-tight">Application Tracker</span>
-          <span className="mt-1 text-xs font-normal text-[var(--muted)]">Your job search, organized.</span>
+          <span className="font-bold tracking-tight">TrackMate</span>
+          <span className="mt-1 text-xs font-normal text-[var(--muted)]">Track Your Applications, Never Miss an Opportunity</span>
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {links.map(({ href, label }) => (

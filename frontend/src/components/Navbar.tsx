@@ -29,8 +29,8 @@ export default function Navbar() {
     <nav className="border-b border-[var(--border)] bg-white sticky top-0 z-50" aria-label="Main navigation">
       <div className="flex w-full items-center justify-between gap-6 px-4 py-3 sm:px-5">
         <div className="flex flex-col leading-tight">
-          <Link href="/" className="font-bold tracking-tight text-[var(--foreground)]">Application Tracker</Link>
-          <span className="mt-1 text-xs text-[var(--muted)]">Your job search, organized.</span>
+          <Link href="/" className="font-bold tracking-tight text-[var(--foreground)]">TrackMate</Link>
+          <span className="mt-1 text-xs text-[var(--muted)]">Track Your Applications, Never Miss an Opportunity</span>
         </div>
 
         <div className="hidden items-center gap-1 md:flex" role="menubar">
